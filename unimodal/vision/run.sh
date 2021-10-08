@@ -1,0 +1,1 @@
+python3 extract_features.py cfg.json saved_embed --device_ids 0
