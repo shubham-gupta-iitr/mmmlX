@@ -6,9 +6,10 @@ import torch
 from torch.nn import DataParallel
 from torch.utils.data import DataLoader
 
-from model import Model
+from model import load_model, get_prediction
 from dataset import ImageDataset
 from easydict import EasyDict as edict
+import pickle
 
 def load_json(cfg_path):
     """
@@ -42,7 +43,7 @@ def get_ids(args, cfg, dataset):
 def get_model(args, cfg):
     device_ids = list(map(int, args.device_ids.split(',')))
     device = torch.device('cuda:{}'.format(device_ids[0]))
-    model = Model(cfg)
+    model = load_model()
     model = DataParallel(model, device_ids=device_ids).to(device).eval()
     if args.verbose:
         print("Model loaded")
@@ -68,15 +69,22 @@ def extractor(args):
     steps = len(dataloader)
     dataiter = iter(dataloader)
     feats = torch.Tensor()
-
+    pred_boxes_list = []
+    pred_class_list = []
     for step in range(steps):
         print("Step: ", step)
         image = next(dataiter)
         image = image.to(device)
-        feat = model(image).squeeze(-1).squeeze(-1).detach().cpu()
-        feats = torch.cat((feats, feat), 0)
-    save_file = os.path.join(args.save_path, f"{cfg.Qcate}.pt")
-    torch.save(feats, save_file)        
+        pred_boxes, pred_class = get_prediction(image, model)
+        pred_boxes_list.append(pred_boxes)
+        pred_class_list.append(pred_class)
+    save_file = os.path.join(args.save_path, f"{cfg.Qcate}_boxes.pkl")
+    with open(save_file, 'wb') as handle:
+        pickle.dump(pred_boxes_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    save_file = os.path.join(args.save_path, f"{cfg.Qcate}_class.pkl")
+    with open(save_file, 'wb') as handle:
+        pickle.dump(pred_class_list, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
     
     
 

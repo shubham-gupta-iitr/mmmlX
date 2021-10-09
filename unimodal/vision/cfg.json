@@ -2,10 +2,7 @@
     "trainval_path": "/project_data/ramanan/shubham/project/data/WebQA_train_val.json",
     "image_tsv": "/project_data/ramanan/shubham/project/data/imgs.tsv",
     "lineidx_path": "/project_data/ramanan/shubham/project/data/imgs.lineidx",
-    "base": "resnet152",
-    "pretrained": true,
-    "batch_size":16,
-    "num_base_layers_end": 1,
-    "Qcate": "Others",
+    "batch_size":1,
+    "Qcate": "choose",
     "save_df": false
 }

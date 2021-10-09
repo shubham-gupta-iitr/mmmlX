@@ -2,43 +2,50 @@ import torch
 import torchvision.models
 from torch import nn
 import sys
+import numpy as np
 
-list_ = ["vgg11", "vgg13", "vgg16", "vgg19", "vgg19_bn",
-    "vgg16_bn", "vgg11_bn", "mnasnet0_5", "mnasnet0_75",
-    "mnasnet1_0", "mnasnet1_3", "mobilenet_v2", "alexnet"]
+COCO_INSTANCE_CATEGORY_NAMES = [
+    '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+    'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A', 'stop sign',
+    'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
+    'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack', 'umbrella', 'N/A', 'N/A',
+    'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+    'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+    'bottle', 'N/A', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+    'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+    'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table',
+    'N/A', 'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
+    'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
+    'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
+]
 
-class Model(nn.Module):
+def load_model():
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True).eval()
+    return model
 
-    def __init__(self, cfg):
-        super(Model, self).__init__()
-        self.cfg = cfg
-        self.num_base_layers_end = cfg.num_base_layers_end
-        self.pretrained = cfg.pretrained
-
-        if self.pretrained == True:
-            model = getattr(
-                sys.modules["torchvision.models"],
-                self.cfg.base)(pretrained=True)
-        else:
-            model = getattr(
-                sys.modules["torchvision.models"],
-                self.cfg.base)()
-        
-        if cfg.base not in list_:
-            num_features = list(model.children())[-self.num_base_layers_end].in_features
-        elif "vgg" not in self.cfg.base:
-            num_features = model.classifier[-1].in_features
-        else:
-            num_features = 512
-
-        if "vgg" not in self.cfg.base:
-            model = nn.Sequential(*list(model.children())[:-self.num_base_layers_end])
-        else:
-            model = nn.Sequential(*list(model.children())[:-2])
-        
-        self.model = model
-        self.num_features = num_features
+def get_prediction(img, model, confidence=0.5):
+    """
+    get_prediction
+    parameters:
+      - img_path - path of the input image
+      - confidence - threshold value for prediction score
+    method:
+      - Image is obtained from the image path
+      - the image is converted to image tensor using PyTorch's Transforms
+      - image is passed through the model to get the predictions
+      - class, box coordinates are obtained, but only prediction score > threshold
+        are chosen.
+    """
+    pred = model(img)
     
-    def forward(self,x):
-        feat = self.model(x)
-        return feat
+    pred_class = [COCO_INSTANCE_CATEGORY_NAMES[i] for i in list(pred[0]['labels'].detach().cpu().numpy())]
+    pred_boxes = [[(i[0], i[1]), (i[2], i[3])] for i in list(pred[0]['boxes'].detach().cpu().numpy())]
+    pred_score = list(pred[0]['scores'].detach().cpu().numpy())
+    pred_t = [pred_score.index(x) for x in pred_score if x>confidence]
+    if len(pred_t)<1:
+      return [], []
+    else:
+      pred_t = pred_t[-1]
+      pred_boxes = pred_boxes[:pred_t+1]
+      pred_class = pred_class[:pred_t+1]
+    return pred_boxes, pred_class

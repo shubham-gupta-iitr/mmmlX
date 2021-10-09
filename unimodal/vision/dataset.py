@@ -34,13 +34,7 @@ class ImageDataset(Dataset):
             imgid, img_base64 = fp.readline().strip().split('\t')
         image = cv2.imdecode(np.frombuffer(base64.b64decode(img_base64), dtype=np.uint8), cv2.IMREAD_COLOR)
         image = Image.fromarray(image)
-        tfs = transforms.Compose([
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                ])
+        tfs = transforms.Compose([transforms.ToTensor()])
         image = tfs(image)
-
         return image
         
