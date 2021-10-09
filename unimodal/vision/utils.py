@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from model import Model
 from dataset import ImageDataset
 from easydict import EasyDict as edict
+import pickle
 
 def load_json(cfg_path):
     """
@@ -68,15 +69,19 @@ def extractor(args):
     steps = len(dataloader)
     dataiter = iter(dataloader)
     feats = torch.Tensor()
-
+    image_ids = []
     for step in range(steps):
         print("Step: ", step)
-        image = next(dataiter)
+        image, image_id = next(dataiter)
         image = image.to(device)
         feat = model(image).squeeze(-1).squeeze(-1).detach().cpu()
         feats = torch.cat((feats, feat), 0)
+        image_ids.extend(image_id)
     save_file = os.path.join(args.save_path, f"{cfg.Qcate}.pt")
-    torch.save(feats, save_file)        
+    torch.save(feats, save_file)
+    save_file = os.path.join(args.save_path, f"{cfg.Qcate}_image_ids.pkl")
+    with open(save_file, 'wb') as handle:
+        pickle.dump(image_ids, handle, protocol=pickle.HIGHEST_PROTOCOL)    
     
     
 
