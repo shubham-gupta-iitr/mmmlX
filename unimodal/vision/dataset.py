@@ -19,20 +19,25 @@ class ImageDataset(Dataset):
             self.lineidx = [int(i.strip()) for i in fp_lineidx.readlines()]
         image_paths = []
         for id in self._ids:
+            pos_path = []
+            neg_path = []
             for f in dataset[id]['img_posFacts']:
-                image_paths.append(f['image_id'])       
-        self._image_paths = list(set(image_paths))
-        self._num_images = len(self._image_paths)
+                pos_path.append(f['image_id'])
+            for f in dataset[id]['img_negFacts']:
+                neg_path.append(f['image_id'])
+            image_paths.append([pos_path, neg_path])
+        self._image_paths = image_paths
+        self._num_queries = len(self._image_paths)
 
     def __len__(self):
-        return self._num_images
+        return self._num_queries
     
-    def __getitem__(self, idx):
-        image_id = self._image_paths[idx]
+    def load_img(self, image_id):
         with open(self.image_tsv, "r") as fp:
             fp.seek(self.lineidx[int(image_id)%10000000])
             imgid, img_base64 = fp.readline().strip().split('\t')
         image = cv2.imdecode(np.frombuffer(base64.b64decode(img_base64), dtype=np.uint8), cv2.IMREAD_COLOR)
+        #if image != None:
         image = Image.fromarray(image)
         tfs = transforms.Compose([
                 transforms.Resize(256),
@@ -41,6 +46,18 @@ class ImageDataset(Dataset):
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 ])
         image = tfs(image)
-
         return image
+
+    def __getitem__(self, idx):
+        pos_ids = self._image_paths[idx][0]
+        neg_ids = self._image_paths[idx][1]
+        pos_imgs = []
+        neg_imgs = []
+        for image_id in pos_ids:
+            pos_imgs.append(self.load_img(image_id))
+
+        for image_id in neg_ids:
+            neg_imgs.append(self.load_img(image_id))    
+
+        return pos_imgs, neg_imgs
         

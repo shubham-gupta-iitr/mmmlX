@@ -67,16 +67,32 @@ def extractor(args):
 
     steps = len(dataloader)
     dataiter = iter(dataloader)
-    feats = torch.Tensor()
-
+    feat_diffs = []
     for step in range(steps):
         print("Step: ", step)
-        image = next(dataiter)
-        image = image.to(device)
-        feat = model(image).squeeze(-1).squeeze(-1).detach().cpu()
-        feats = torch.cat((feats, feat), 0)
-    save_file = os.path.join(args.save_path, f"{cfg.Qcate}.pt")
-    torch.save(feats, save_file)        
+        pos_imgs, neg_imgs = next(dataiter)
+        if len(pos_imgs) == 0 or len(neg_imgs) == 0:
+            feat_diff.append(0.0)
+        else:
+            pos_feats  = []
+            neg_feats = []
+            feat_diff = torch.Tensor([0.0])
+            for image in pos_imgs:
+                image = image.to(device)
+                feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
+                pos_feats.append(feat)
+            for image in neg_imgs:
+                image = image.to(device)
+                feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
+                neg_feats.append(feat)
+            for pos_feat in pos_feats:
+                for neg_feat in neg_feats:
+                    feat_diff += np.linalg.norm((pos_feat, neg_feat))
+            feat_diff /= (len(neg_imgs)*len(pos_imgs))
+    feat_mean = np.mean(feat_diffs)
+    print(f"The feature difference mean for {cfg.Qcate} is: {feat_mean}")
+    #save_file = os.path.join(args.save_path, f"{cfg.Qcate}.pt")
+    #torch.save(feats, save_file)        
     
     
 
