@@ -4,8 +4,8 @@
     "lineidx_path": "/project_data/ramanan/shubham/project/data/imgs.lineidx",
     "base": "resnet152",
     "pretrained": true,
-    "batch_size":16,
+    "batch_size":1,
     "num_base_layers_end": 1,
-    "Qcate": "Others",
+    "Qcate": "color",
     "save_df": false
 }

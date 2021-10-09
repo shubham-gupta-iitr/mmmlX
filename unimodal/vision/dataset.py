@@ -37,16 +37,18 @@ class ImageDataset(Dataset):
             fp.seek(self.lineidx[int(image_id)%10000000])
             imgid, img_base64 = fp.readline().strip().split('\t')
         image = cv2.imdecode(np.frombuffer(base64.b64decode(img_base64), dtype=np.uint8), cv2.IMREAD_COLOR)
-        #if image != None:
-        image = Image.fromarray(image)
-        tfs = transforms.Compose([
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                ])
-        image = tfs(image)
-        return image
+        if image is not None:
+            image = Image.fromarray(image)
+            tfs = transforms.Compose([
+                    transforms.Resize(256),
+                    transforms.CenterCrop(224),
+                    transforms.ToTensor(),
+                    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                    ])
+            image = tfs(image)
+            return image
+        else:
+            return None
 
     def __getitem__(self, idx):
         pos_ids = self._image_paths[idx][0]
@@ -57,7 +59,8 @@ class ImageDataset(Dataset):
             pos_imgs.append(self.load_img(image_id))
 
         for image_id in neg_ids:
-            neg_imgs.append(self.load_img(image_id))    
+            if self.load_img(image_id) != None:
+                neg_imgs.append(self.load_img(image_id))    
 
         return pos_imgs, neg_imgs
         

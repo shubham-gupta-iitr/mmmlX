@@ -76,7 +76,7 @@ def extractor(args):
         else:
             pos_feats  = []
             neg_feats = []
-            feat_diff = torch.Tensor([0.0])
+            feat_diff = 0.0
             for image in pos_imgs:
                 image = image.to(device)
                 feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
@@ -89,7 +89,8 @@ def extractor(args):
                 for neg_feat in neg_feats:
                     feat_diff += np.linalg.norm((pos_feat, neg_feat))
             feat_diff /= (len(neg_imgs)*len(pos_imgs))
-    feat_mean = np.mean(feat_diffs)
+        feat_diffs.append(feat_diff)
+    feat_mean = np.nanmean(feat_diffs)
     print(f"The feature difference mean for {cfg.Qcate} is: {feat_mean}")
     #save_file = os.path.join(args.save_path, f"{cfg.Qcate}.pt")
     #torch.save(feats, save_file)        
