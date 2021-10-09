@@ -39,7 +39,7 @@ for k in list(dataset.keys()):
         pickle.dump(QA_dict,fp)
       with open("snipEmbeddings.pkl","wb") as fp:
         pickle.dump(snippets_dict,fp)
-    print("done writing 10000 samples")
+      print("done writing 10000 samples")
 
 with open("qaEmbeddings.pkl","wb") as fp:
   pickle.dump(QA_dict,fp)
