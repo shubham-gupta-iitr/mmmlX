@@ -71,24 +71,23 @@ def extractor(args):
     for step in range(steps):
         print("Step: ", step)
         pos_imgs, neg_imgs = next(dataiter)
-        if len(pos_imgs) == 0 or len(neg_imgs) == 0:
-            feat_diff.append(0.0)
+        if len(pos_imgs) <= 1:
+            feat_diff = 0.0
         else:
-            pos_feats  = []
-            neg_feats = []
+            pos_feats  = [] 
             feat_diff = 0.0
             for image in pos_imgs:
                 image = image.to(device)
                 feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
                 pos_feats.append(feat)
-            for image in neg_imgs:
-                image = image.to(device)
-                feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
-                neg_feats.append(feat)
-            for pos_feat in pos_feats:
-                for neg_feat in neg_feats:
-                    feat_diff += np.linalg.norm((pos_feat, neg_feat))
-            feat_diff /= (len(neg_imgs)*len(pos_imgs))
+            # for image in neg_imgs:
+            #     image = image.to(device)
+            #     feat = model(image).squeeze(-1).squeeze(-1).detach().cpu().numpy()
+            #     neg_feats.append(feat)
+            
+            for i in range(1,len(pos_feats)):
+                feat_diff += np.linalg.norm((pos_feats[0], pos_feats[i]))
+            feat_diff /= len(pos_imgs)
         feat_diffs.append(feat_diff)
     feat_mean = np.nanmean(feat_diffs)
     print(f"The feature difference mean for {cfg.Qcate} is: {feat_mean}")

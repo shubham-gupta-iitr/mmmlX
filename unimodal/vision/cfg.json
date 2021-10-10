@@ -6,6 +6,6 @@
     "pretrained": true,
     "batch_size":1,
     "num_base_layers_end": 1,
-    "Qcate": "color",
+    "Qcate": "YesNo",
     "save_df": false
 }
