@@ -42,5 +42,5 @@ class ImageDataset(Dataset):
                 ])
         image = tfs(image)
 
-        return image
+        return image, image_id
         
