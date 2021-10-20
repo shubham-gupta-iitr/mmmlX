@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 This repo hosts the source code for the baseline models described in [WebQA: Multihop and Multimodal QA](https://arxiv.org/abs/2109.00590).
 
 All models were initialized from the released [VLP checkpoints](https://github.com/LuoweiZhou/VLP#-misc).
@@ -102,7 +101,3 @@ Please acknowledge the following paper if you use the code:
 ## Acknowledgement
 Our code is mainly based on [Zhou](https://arxiv.org/pdf/1909.11059.pdf) et al.'s [VLP](https://github.com/LuoweiZhou/VLP) repo. We thank the authors for their valuable work.
 
-=======
-# mmmlX
-Multimodal Project
->>>>>>> ba5b656225d5cbadd932a7a02d330d54e874be7a
