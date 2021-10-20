@@ -6,6 +6,16 @@ All models were initialized from the released [VLP checkpoints](https://github.c
 We release checkpoints fine-tuned on WebQA [here](https://tiger.lti.cs.cmu.edu/yingshac/WebQA_data_first_release/WebQA_baseline_ckpts.7z).
 
 
+## News
+
+**Update (6 Oct, 2021)**:
+
+In our baseline code, we separate the data loading of image- and text-based queries for the sake of performance breakdown. Thus, the two arguments, `txt_dataset_json_path` and `img_dataset_json_path`, correspond to the two folds,  according to the `Qcate` field. 
+
+**Update (29 Sep, 2021)**:
+
+We clarify here what are arguments `--gold_feature_folder`, `--distractor_feature_folder`, and `--x_distractor_feature_folder`. Basically, during implementation we divide the images into 3 buckets: positive images for image-based queries (`gold`), negative images for image-based queries (`distractors`) and negative images for text-based queries (`x_distractors`), where the 'x' stands for 'cross-modality'. Image- and text-based queries can be disinguished via the "Qcate" field in the dataset file. Text-based queries all have `Qcate == 'text'`, while the rest are image-based ones.
+
 ## Environment
 ```
 cd VLP
@@ -31,7 +41,7 @@ pip install opencv-python==3.4.2.17
 
 The detectron2-based feature extraction code is available under this [repo](https://github.com/zdxdsw/WebQA_x101fpn/blob/main/featureExtraction.py). Part of the code is based on [LuoweiZhou/detectron-vlp](https://github.com/LuoweiZhou/detectron-vlp) and [facebookresearch/detectron2](https://github.com/facebookresearch/detectron2)
 
-[Download checkpoint](https://onedrive.live.com/download?cid=E5364FD183A1F5BB&resid=E5364FD183A1F5BB%212014&authkey=AAHgqN3Y-LXcBvU)
+[Download checkpoint](https://tiger.lti.cs.cmu.edu/yingshac/WebQA_data_first_release/e2e_faster_rcnn_X-101-64x4d-FPN_2x-vlp-427.pkl)
 
 - VinVL
 
