@@ -8,8 +8,8 @@ import os
 os.environ['MASTER_ADDR'] = 'localhost'
 #os.environ['MASTER_PORT'] = '12355'
 import sys
-sys.path.append("/home/yingshac/CYS/WebQnA/VLP")
-sys.path.append("/home/yingshan/CYS/WebQnA/VLP")
+sys.path.append("/project_data/ramanan/shubham/project/code/WebQA_Baseline")
+#sys.path.append("/home/yingshan/CYS/WebQnA/VLP")
 import logging
 import glob
 import math, time
@@ -98,8 +98,8 @@ def main():
                         type=str,
                         help="The output directory where the log will be written.")
     parser.add_argument("--model_recover_path",
-                        #default=None,
-                        default="/home/yingshac/CYS/WebQnA/cpts/cc_g8_lr1e-4_batch512_s0.75_b0.25/model.30.bin",
+                        default=None,
+                        #default="/home/yingshac/CYS/WebQnA/cpts/cc_g8_lr1e-4_batch512_s0.75_b0.25/model.30.bin",
                         type=str,
                         help="The file of fine-tuned pretraining model.")
     parser.add_argument("--do_train",

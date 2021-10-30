@@ -8,8 +8,8 @@ import os
 os.environ['MASTER_ADDR'] = 'localhost'
 #os.environ['MASTER_PORT'] = '12355'
 import sys
-sys.path.append("/home/yingshac/CYS/WebQnA/VLP")
-sys.path.append("/home/yingshan/CYS/WebQnA/VLP")
+sys.path.append("/project_data/ramanan/shubham/project/code/WebQA_Baseline")
+#sys.path.append("/home/yingshan/CYS/WebQnA/VLP")
 import logging
 import glob
 import math, time

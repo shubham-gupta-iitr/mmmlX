@@ -1033,9 +1033,9 @@ class BertForWebqa(PreTrainedBertModel):
                                         nn.Dropout(config.hidden_dropout_prob)) # use to be 0.3
             try:
                 self.vis_embed[0].weight.data.copy_(torch.from_numpy(pickle.load(
-                        open('/home/yingshac/CYS/WebQnA/cpts/detectron_weights/fc7_w.pkl', 'rb'))))
+                        open('/project_data/ramanan/shubham/project/code/WebQA_Baseline/detectron_weights/fc7_w.pkl', 'rb'))))
                 self.vis_embed[0].bias.data.copy_(torch.from_numpy(pickle.load(
-                        open('/home/yingshac/CYS/WebQnA/cpts/detectron_weights/fc7_b.pkl', 'rb'))))
+                        open('/project_data/ramanan/shubham/project/code/WebQA_Baseline/detectron_weights/fc7_b.pkl', 'rb'))))
             except:
                 raise Exception('Cannot find Detectron fc7 weights! Download from https://dl.fbaipublicfiles.com/ActivityNet-Entities/ActivityNet-Entities/detectron_weights.tar.gz and uncompress under the code root directory.')
 
