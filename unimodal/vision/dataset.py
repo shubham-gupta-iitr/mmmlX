@@ -5,6 +5,8 @@ from torchvision import transforms
 import base64
 from PIL import Image
 from transformers import CLIPProcessor
+import clip
+import re
 np.random.seed(0)
 
 class ImageDataset(Dataset):
@@ -20,12 +22,28 @@ class ImageDataset(Dataset):
         with open(self.lineidx_path, "r") as fp_lineidx:
             self.lineidx = [int(i.strip()) for i in fp_lineidx.readlines()]
         image_paths = []
+        captions = []
         for id in self._ids:
             for f in dataset[id]['img_posFacts']:
-                image_paths.append(f['image_id'])   
+                image_paths.append(f['image_id'])
+                #print(f['caption'])
+                caption = f['caption']
+                caption = re.sub(r'[^A-Za-z0-9 ]+', '', caption)[:75]
+                #print(id)
+                if len(caption)>75:
+                    print("NNNN")
+                    assert(False)
+                try:
+                    caption_ = clip.tokenize(caption)
+                except:
+                    print(id)
+                    assert(False)
+                captions.append(caption_)
             #for f in dataset[id]['img_negFacts']:
             #    image_paths.append(f['image_id'])
-        self._image_paths = list(set(image_paths))
+            #    captions.append(f['caption'])
+        self._captions = captions
+        self._image_paths = image_paths
         self._num_images = len(self._image_paths)
 
     def __len__(self):
@@ -42,5 +60,8 @@ class ImageDataset(Dataset):
         image = Image.fromarray(image)
         #inputs = self.processor(images=image, return_tensors="pt", padding=True)
         image = self.preprocess(image)
-        return image, image_id
+        #print(self._captions[idx])
+        #caption = clip.tokenize(self._captions[idx])
+        caption = self._captions[idx]
+        return image, image_id, caption
         

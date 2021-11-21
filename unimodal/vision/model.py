@@ -19,6 +19,7 @@ class Model(nn.Module):
         self.model = model
         self.preprocess = preprocess
 
-    def forward(self,image):
-        output = self.model.encode_image(image)
-        return output
+    def forward(self,image, caption):
+        out_img = self.model.encode_image(image)
+        out_txt = self.model.encode_text(caption)
+        return out_img,out_txt
