@@ -34,8 +34,8 @@ def load_data(args, cfg):
     return dataset
 
 def get_ids(args, cfg, dataset):
+    ids = [id for id in dataset if dataset[id]["Qcate"] == cfg.Qcate]
     query_type = cfg.Qcate
-    ids = [id for id in dataset if dataset[id]["Qcate"] == query_type]
     if args.verbose:
         print(f"Total ids for query {query_type}: ", len(ids))
     return ids
@@ -43,15 +43,15 @@ def get_ids(args, cfg, dataset):
 def get_model(args, cfg):
     device_ids = list(map(int, args.device_ids.split(',')))
     device = torch.device('cuda:{}'.format(device_ids[0]))
-    model = Model(cfg)
-    model = DataParallel(model, device_ids=device_ids).to(device).eval()
+    model = Model(cfg, device)
+    #model = DataParallel(model, device_ids=device_ids).to(device).eval()
     if args.verbose:
         print("Model loaded")
     return model
 
-def create_dataloader(args, cfg, ids, dataset):
+def create_dataloader(args, cfg, ids, dataset, processor):
     dataloader = DataLoader(
-            ImageDataset(cfg, ids, dataset),
+            ImageDataset(cfg, ids, dataset, processor),
             batch_size=cfg.batch_size, num_workers=args.num_workers,
             drop_last=False, shuffle=False)
     return dataloader
@@ -60,8 +60,8 @@ def extractor(args):
     cfg = load_json(args.cfg_path)
     dataset = load_data(args, cfg)
     ids = get_ids(args, cfg, dataset)
-    dataloader = create_dataloader(args, cfg, ids, dataset)
     model = get_model(args, cfg)
+    dataloader = create_dataloader(args, cfg, ids, dataset, model.preprocess)
 
     device_ids = list(map(int, args.device_ids.split(',')))
     device = torch.device('cuda:{}'.format(device_ids[0]))

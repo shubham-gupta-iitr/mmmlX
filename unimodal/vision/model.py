@@ -1,44 +1,24 @@
-import torch
-import torchvision.models
+from transformers import CLIPModel
 from torch import nn
-import sys
+# class Model(nn.Module):
+#     def __init__(self, cfg):
+#         super(Model, self).__init__()
+#         self.model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 
-list_ = ["vgg11", "vgg13", "vgg16", "vgg19", "vgg19_bn",
-    "vgg16_bn", "vgg11_bn", "mnasnet0_5", "mnasnet0_75",
-    "mnasnet1_0", "mnasnet1_3", "mobilenet_v2", "alexnet"]
+#     def forward(self,inputs):
+#         output = self.model.get_image_features(**inputs)
+#         return output
+
+import torch
+import clip
 
 class Model(nn.Module):
-
-    def __init__(self, cfg):
+    def __init__(self, cfg, device):
         super(Model, self).__init__()
-        self.cfg = cfg
-        self.num_base_layers_end = cfg.num_base_layers_end
-        self.pretrained = cfg.pretrained
-
-        if self.pretrained == True:
-            model = getattr(
-                sys.modules["torchvision.models"],
-                self.cfg.base)(pretrained=True)
-        else:
-            model = getattr(
-                sys.modules["torchvision.models"],
-                self.cfg.base)()
-        
-        if cfg.base not in list_:
-            num_features = list(model.children())[-self.num_base_layers_end].in_features
-        elif "vgg" not in self.cfg.base:
-            num_features = model.classifier[-1].in_features
-        else:
-            num_features = 512
-
-        if "vgg" not in self.cfg.base:
-            model = nn.Sequential(*list(model.children())[:-self.num_base_layers_end])
-        else:
-            model = nn.Sequential(*list(model.children())[:-2])
-        
+        model, preprocess = clip.load("ViT-B/32", device=device)
         self.model = model
-        self.num_features = num_features
-    
-    def forward(self,x):
-        feat = self.model(x)
-        return feat
+        self.preprocess = preprocess
+
+    def forward(self,image):
+        output = self.model.encode_image(image)
+        return output
