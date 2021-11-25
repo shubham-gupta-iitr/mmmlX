@@ -38,6 +38,7 @@ class ImageDataset(Dataset):
             imgid, img_base64 = fp.readline().strip().split('\t')
         image = cv2.imdecode(np.frombuffer(base64.b64decode(img_base64), dtype=np.uint8), cv2.IMREAD_COLOR)
         if image is not None:
+            image = image[:,:,::-1]
             image = Image.fromarray(image)
             tfs = transforms.Compose([
                     transforms.Resize(256),
