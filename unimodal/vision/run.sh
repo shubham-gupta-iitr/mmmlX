@@ -1,1 +1,1 @@
-python3 extract_features.py cfg.json saved_clip/image_features --device_ids 0
+python3 extract_features.py cfg.json saved_clip --device_ids 0

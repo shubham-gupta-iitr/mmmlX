@@ -26,22 +26,16 @@ class ImageDataset(Dataset):
         for id in self._ids:
             for f in dataset[id]['img_posFacts']:
                 image_paths.append(f['image_id'])
-                #print(f['caption'])
                 caption = f['caption']
                 caption = re.sub(r'[^A-Za-z0-9 ]+', '', caption)[:75]
-                #print(id)
-                if len(caption)>75:
-                    print("NNNN")
-                    assert(False)
-                try:
-                    caption_ = clip.tokenize(caption)
-                except:
-                    print(id)
-                    assert(False)
+                caption_ = clip.tokenize(caption)
                 captions.append(caption_)
-            #for f in dataset[id]['img_negFacts']:
-            #    image_paths.append(f['image_id'])
-            #    captions.append(f['caption'])
+            for f in dataset[id]['img_negFacts']:
+               image_paths.append(f['image_id'])
+               caption = f['caption']
+               caption = re.sub(r'[^A-Za-z0-9 ]+', '', caption)[:75]
+               caption_ = clip.tokenize(caption)
+               captions.append(caption_)
         self._captions = captions
         self._image_paths = image_paths
         self._num_images = len(self._image_paths)
@@ -56,6 +50,8 @@ class ImageDataset(Dataset):
             fp.seek(self.lineidx[int(image_id)%10000000])
             imgid, img_base64 = fp.readline().strip().split('\t')
         image = cv2.imdecode(np.frombuffer(base64.b64decode(img_base64), dtype=np.uint8), cv2.IMREAD_COLOR)
+        if image is None:
+            image = np.zeros((512,512,3), dtype=np.uint8)
         image = image[:,:,::-1]
         image = Image.fromarray(image)
         #inputs = self.processor(images=image, return_tensors="pt", padding=True)
