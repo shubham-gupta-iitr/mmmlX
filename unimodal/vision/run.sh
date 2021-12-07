@@ -1,1 +1,1 @@
-python3 extract_features.py cfg.json saved_embed --device_ids 0
+python3 extract_features.py cfg.json save_resnet152_embed_pos_neg --device_ids 0

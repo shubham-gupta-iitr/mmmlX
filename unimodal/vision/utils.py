@@ -70,6 +70,7 @@ def extractor(args):
     dataiter = iter(dataloader)
     feats = torch.Tensor()
     image_ids = []
+    print(f"Total Steps: {steps}")
     for step in range(steps):
         print("Step: ", step)
         image, image_id = next(dataiter)
