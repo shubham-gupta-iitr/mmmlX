@@ -18,7 +18,7 @@ models trained by the authors of WebQA (https://arxiv.org/pdf/2109.00590.pdf)
 # Disclaimer
 Most of the code has been inspired from the WebQA repository
 https://github.com/WebQnA/WebQA_Baseline
-Paper: https://arxiv.org/pdf/2109.00590.pdf[MMML_Project_Final_report.pdf](https://github.com/shubham-gupta-iitr/mmmlX/files/7775296/MMML_Project_Final_report.pdf)
+Paper: https://arxiv.org/pdf/2109.00590.pdf
 
 Website: https://webqna.github.io/
 
