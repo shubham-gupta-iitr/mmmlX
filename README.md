@@ -12,7 +12,7 @@ models trained by the authors of WebQA (https://arxiv.org/pdf/2109.00590.pdf)
 * For graph-based source retrieval use the code available in multimodal folder
 
 # Details
-* For more details checkout our poster and report (https://github.com/shubham-gupta-iitr/mmmlX/files/7775297/Poster.pdf)
+* For more details checkout our poster and report
  for project description.
 
 # Disclaimer
